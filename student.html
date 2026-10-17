@@ -15,31 +15,54 @@
       user-select: none;
       -webkit-user-select: none;
     }
+
+    @keyframes fadeInScale {
+      0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+      70% { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+    }
+
     body {
       font-family: 'Inter', -apple-system, sans-serif;
-      background-color: #f1f5f9;
+      background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
       color: #0f172a;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
     }
 
-    /* Screen Frame */
+    /* Screen Frame - Centered & No Scroll */
     .exam-app {
       width: 100%;
-      max-width: 480px;
+      max-width: 440px;
       height: 100vh;
+      max-height: 850px;
       background: #f8fafc;
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
       position: relative;
       overflow: hidden;
-      border-left: 1px solid #cbd5e1;
-      border-right: 1px solid #cbd5e1;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      border-radius: 0;
+      animation: fadeInScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    /* Top NTA Style Header Bar */
+    @media (min-width: 480px) {
+      .exam-app {
+        border-radius: 20px;
+        height: 92vh;
+      }
+    }
+
+    /* Top NTA Header Bar */
     .app-bar {
       background: #1e293b;
       color: #ffffff;
@@ -54,45 +77,51 @@
     .timer-badge {
       background: #dc2626;
       color: #ffffff;
-      padding: 5px 10px;
+      padding: 4px 8px;
       border-radius: 6px;
       font-family: monospace;
       font-weight: 700;
-      font-size: 13px;
+      font-size: 12px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
     }
 
     .warning-badge {
       background: #d97706;
       color: #ffffff;
-      padding: 4px 8px;
+      padding: 4px 6px;
       border-radius: 6px;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
     }
 
+    /* App Content Centered */
     .app-content {
       flex: 1;
-      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: stretch;
       padding: 12px;
+      overflow: hidden;
       position: relative;
     }
 
     .card {
       background: #ffffff;
       border-radius: 12px;
-      padding: 16px;
+      padding: 14px;
       border: 1px solid #cbd5e1;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      transition: all 0.3s ease;
+      animation: fadeInScale 0.3s ease forwards;
     }
 
     /* Input Fields */
     .input-field {
       width: 100%;
-      padding: 10px 12px;
+      padding: 9px 12px;
       background: #ffffff;
       border: 1px solid #94a3b8;
       border-radius: 8px;
@@ -100,42 +129,48 @@
       font-weight: 500;
       outline: none;
       margin-top: 4px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
+      transition: all 0.2s;
     }
-    .input-field:focus { border-color: #2563eb; ring: 2px #bfdbfe; }
+    .input-field:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
 
-    /* NTA Option Item Design */
+    /* NTA Option Item Design with Hover Animation */
     .opt-label {
       display: flex;
       align-items: flex-start;
-      gap: 10px;
-      padding: 10px 12px;
+      gap: 8px;
+      padding: 9px 10px;
       border-radius: 8px;
       border: 1px solid #cbd5e1;
       background: #ffffff;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 500;
       cursor: pointer;
-      margin-bottom: 8px;
-      transition: all 0.15s ease-in-out;
+      margin-bottom: 6px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .opt-label:active { background: #f1f5f9; }
+    .opt-label:hover {
+      border-color: #93c5fd;
+      background: #f8fafc;
+      transform: translateX(2px);
+    }
     .opt-label.selected {
       border-color: #2563eb;
       background: #eff6ff;
       color: #1e40af;
       font-weight: 600;
+      transform: translateX(4px);
     }
     .opt-radio {
       margin-top: 2px;
       accent-color: #2563eb;
-      width: 16px;
-      height: 16px;
+      width: 15px;
+      height: 15px;
     }
 
-    /* Button System */
+    /* Button System with High Animation */
     .btn {
-      padding: 10px 14px;
+      padding: 9px 12px;
       font-weight: 600;
       font-size: 12px;
       border: none;
@@ -145,11 +180,16 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
+      transition: all 0.2s ease;
     }
-    .btn-save { background: #16a34a; color: white; }
+    .btn:active { transform: scale(0.97); }
+    .btn-save { background: #16a34a; color: white; animation: pulseGlow 2.5s infinite; }
+    .btn-save:hover { background: #15803d; }
     .btn-review { background: #7c3aed; color: white; }
+    .btn-review:hover { background: #6d28d9; }
     .btn-clear { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
-    .btn-submit { background: #dc2626; color: white; width: 100%; padding: 12px; border-radius: 8px; font-size: 13px; }
+    .btn-clear:hover { background: #cbd5e1; }
+    .btn-submit { background: #dc2626; color: white; width: 100%; padding: 11px; border-radius: 8px; font-size: 13px; }
 
     /* Question Palette Modal Grid Drawer */
     .palette-drawer {
@@ -157,31 +197,31 @@
       top: 0;
       right: 0;
       bottom: 0;
-      width: 280px;
+      width: 260px;
       background: #ffffff;
-      border-left: 2px solid #cbd5e1;
-      box-shadow: -4px 0 16px rgba(0,0,0,0.15);
+      border-left: 1px solid #cbd5e1;
+      box-shadow: -8px 0 24px rgba(0,0,0,0.2);
       z-index: 30;
       display: flex;
       flex-direction: column;
       transform: translateX(100%);
-      transition: transform 0.25s ease-in-out;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .palette-drawer.open { transform: translateX(0); }
 
     .palette-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      padding: 12px;
-      max-height: 320px;
+      gap: 6px;
+      padding: 10px;
+      max-height: 280px;
       overflow-y: auto;
     }
 
     .q-btn {
-      width: 42px;
-      height: 38px;
-      font-size: 12px;
+      width: 38px;
+      height: 34px;
+      font-size: 11px;
       font-weight: 700;
       border: 1px solid #cbd5e1;
       border-radius: 6px;
@@ -191,26 +231,29 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: all 0.15s;
     }
+    .q-btn:hover { transform: scale(1.05); }
     .q-btn.ans { background: #16a34a; color: white; border-color: #15803d; }
     .q-btn.not-ans { background: #dc2626; color: white; border-color: #b91c1c; }
     .q-btn.review { background: #7c3aed; color: white; border-color: #6d28d9; }
-    .q-btn.active { ring: 2px #2563eb; border-color: #2563eb; font-weight: 800; }
+    .q-btn.active { box-shadow: 0 0 0 2px #2563eb; border-color: #2563eb; }
 
     .hidden-screen { display: none !important; }
-    .svg-icon { width: 16px; height: 16px; fill: currentColor; display: inline-block; vertical-align: middle; }
+    .svg-icon { width: 15px; height: 15px; fill: currentColor; display: inline-block; vertical-align: middle; }
 
     /* Cheat Modal */
     .cheat-warning-overlay {
       position: fixed;
       inset: 0;
       background: rgba(15, 23, 42, 0.92);
-      backdrop-filter: blur(6px);
+      backdrop-filter: blur(8px);
       z-index: 100;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 16px;
+      animation: fadeInScale 0.2s ease;
     }
   </style>
 </head>
@@ -221,47 +264,43 @@
     <!-- TOP HEADER -->
     <header class="app-bar">
       <div>
-        <h1 style="font-size: 14px; font-weight: 700;" id="examHeaderTitle">NTA CBT Entrance Portal</h1>
-        <p style="font-size: 10px; color: #94a3b8;" id="examStudentSub">Session Proctored</p>
+        <h1 style="font-size: 13px; font-weight: 700;" id="examHeaderTitle">NTA CBT Entrance Portal</h1>
+        <p style="font-size: 9px; color: #94a3b8;" id="examStudentSub">Proctored Session</p>
       </div>
-      <div id="examMetaGroup" class="hidden-screen" style="display: flex; gap: 8px; align-items: center;">
-        <div class="warning-badge" id="warnCounterBadge">Warnings: 0/3</div>
+      <div id="examMetaGroup" class="hidden-screen" style="display: flex; gap: 6px; align-items: center;">
+        <div class="warning-badge" id="warnCounterBadge">Warn: 0/3</div>
         <div class="timer-badge">
           <svg class="svg-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
           <span id="timerText">00:00</span>
         </div>
-        <button onclick="togglePalette()" style="background: #334155; border: 1px solid #475569; color: white; padding: 5px 8px; border-radius: 6px; font-size: 11px; cursor: pointer; font-weight: 600;">
-          Palette 📋
+        <button onclick="togglePalette()" style="background: #334155; border: 1px solid #475569; color: white; padding: 4px 6px; border-radius: 5px; font-size: 10px; cursor: pointer; font-weight: 600;">
+          Palette
         </button>
       </div>
     </header>
 
-    <!-- CONTENT AREA -->
+    <!-- CONTENT AREA (CENTERED, NO SCROLL) -->
     <main class="app-content" id="mainContainer">
 
       <!-- ENTRY / CANDIDATE LOGIN SCREEN -->
       <div id="screenEntry" class="card">
-        <div style="border-bottom: 2px solid #2563eb; padding-bottom: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-          <h2 style="font-size: 16px; font-weight: 700; color: #1e293b;">Candidate Exam Gate</h2>
-          <span style="font-size: 10px; background: #dbeafe; color: #1e40af; font-weight: 700; padding: 2px 6px; border-radius: 4px;">NTA CBT</span>
+        <div style="border-bottom: 2px solid #2563eb; padding-bottom: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+          <h2 style="font-size: 15px; font-weight: 700; color: #1e293b;">Candidate Exam Gate</h2>
+          <span style="font-size: 9px; background: #dbeafe; color: #1e40af; font-weight: 700; padding: 2px 5px; border-radius: 4px;">NTA CBT</span>
         </div>
 
         <form onsubmit="event.preventDefault(); startProctoredExam();">
-          <label style="font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase;">Candidate Full Name *</label>
-          <input type="text" id="studentNameInput" required placeholder="e.g. Rahul Sharma" class="input-field">
+          <label style="font-size: 10px; font-weight: 700; color: #475569; text-transform: uppercase;">Candidate Full Name *</label>
+          <input type="text" id="studentNameInput" required placeholder="Enter full name" class="input-field">
 
-          <label style="font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase;">Test Security Code *</label>
+          <label style="font-size: 10px; font-weight: 700; color: #475569; text-transform: uppercase;">Test Security Code *</label>
           <input type="text" id="testCodeInput" required placeholder="EXAM-XXXX" class="input-field" style="font-family: monospace; font-weight: bold; text-transform: uppercase;">
 
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; font-size: 11px; color: #475569; margin-bottom: 12px;">
-            <strong>Proctored Instructions:</strong>
-            <ul style="margin-left: 16px; margin-top: 4px;">
-              <li>Full screen lock & Anti-Cheat detection enabled.</li>
-              <li>Maximum 3 tab switches allowed before auto-submit.</li>
-            </ul>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 6px; font-size: 10px; color: #475569; margin-bottom: 10px;">
+            <strong>Security Notice:</strong> Full screen lock & 3-warning anti-cheat active.
           </div>
 
-          <button type="submit" class="btn btn-save" id="startBtn" style="width: 100%; padding: 12px;">
+          <button type="submit" class="btn btn-save" id="startBtn" style="width: 100%; padding: 11px;">
             Enter Online Exam Hall
           </button>
         </form>
@@ -271,73 +310,73 @@
       <div id="screenHall" class="hidden-screen">
         
         <!-- Question Meta Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; background: #ffffff; padding: 8px 12px; border-radius: 8px; border: 1px solid #cbd5e1;">
-          <span style="font-size: 12px; font-weight: 700; color: #2563eb;" id="qNumberTitle">Question No. 1</span>
-          <span style="font-size: 10px; background: #f1f5f9; color: #475569; font-weight: bold; padding: 2px 6px; border-radius: 4px;" id="markingSchemeVal">+4 / -1 Marks</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; background: #ffffff; padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
+          <span style="font-size: 11px; font-weight: 700; color: #2563eb;" id="qNumberTitle">Question No. 1</span>
+          <span style="font-size: 9px; background: #f1f5f9; color: #475569; font-weight: bold; padding: 2px 5px; border-radius: 4px;" id="markingSchemeVal">+4 / -1</span>
         </div>
 
         <div id="questionBox"></div>
 
         <!-- Action Controls Bar -->
-        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 10px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
             <button onclick="saveAndNext()" class="btn btn-save">Save & Next</button>
-            <button onclick="markForReview()" class="btn btn-review">Mark for Review</button>
+            <button onclick="markForReview()" class="btn btn-review">Mark Review</button>
           </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-            <button onclick="clearResponse()" class="btn btn-clear">Clear Response</button>
-            <button onclick="togglePalette()" class="btn" style="background: #334155; color: white;">Question Palette</button>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+            <button onclick="clearResponse()" class="btn btn-clear">Clear</button>
+            <button onclick="togglePalette()" class="btn" style="background: #334155; color: white;">Open Palette</button>
           </div>
         </div>
 
       </div>
 
       <!-- RESULT / SUBMISSION SCREEN -->
-      <div id="screenResult" class="hidden-screen card" style="text-align: center; padding: 20px 14px;">
-        <h2 style="font-size: 18px; font-weight: 700; color: #16a34a;">Examination Submitted</h2>
-        <p style="font-size: 12px; color: #64748b; margin-top: 2px;">Your responses have been recorded on Realtime DB.</p>
+      <div id="screenResult" class="hidden-screen card" style="text-align: center; padding: 16px 12px;">
+        <h2 style="font-size: 16px; font-weight: 700; color: #16a34a;">Examination Submitted</h2>
+        <p style="font-size: 11px; color: #64748b; margin-top: 2px;">Responses securely synced to Realtime DB.</p>
         
-        <div style="background: #1e293b; color: white; padding: 18px; border-radius: 12px; margin: 16px 0;">
-          <span style="font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase; color: #94a3b8;">Final Score</span>
-          <div id="finalScoreVal" style="font-size: 32px; font-weight: bold; font-family: monospace; color: #38bdf8;">0</div>
+        <div style="background: #1e293b; color: white; padding: 14px; border-radius: 10px; margin: 12px 0;">
+          <span style="font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; color: #94a3b8;">Final Score</span>
+          <div id="finalScoreVal" style="font-size: 28px; font-weight: bold; font-family: monospace; color: #38bdf8;">0</div>
         </div>
 
-        <div id="resultBreakdown" style="font-size: 12px; text-align: left; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;"></div>
+        <div id="resultBreakdown" style="font-size: 11px; text-align: left; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;"></div>
       </div>
 
     </main>
 
     <!-- RIGHT SLIDING QUESTION PALETTE MATRIX -->
     <div id="paletteDrawer" class="palette-drawer">
-      <div style="padding: 12px; background: #1e293b; color: white; display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="font-size: 13px; font-weight: 700;">Question Palette Grid</h3>
-        <button onclick="togglePalette()" style="background: none; border: none; color: white; font-weight: bold; font-size: 16px; cursor: pointer;">✕</button>
+      <div style="padding: 10px 12px; background: #1e293b; color: white; display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 12px; font-weight: 700;">Question Palette</h3>
+        <button onclick="togglePalette()" style="background: none; border: none; color: white; font-weight: bold; font-size: 14px; cursor: pointer;">✕</button>
       </div>
 
-      <div style="padding: 10px; font-size: 10px; border-bottom: 1px solid #e2e8f0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-        <div><span style="display:inline-block; width:10px; height:10px; background:#16a34a; border-radius:2px;"></span> Answered</div>
-        <div><span style="display:inline-block; width:10px; height:10px; background:#dc2626; border-radius:2px;"></span> Not Answered</div>
-        <div><span style="display:inline-block; width:10px; height:10px; background:#7c3aed; border-radius:2px;"></span> Review</div>
-        <div><span style="display:inline-block; width:10px; height:10px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:2px;"></span> Not Visited</div>
+      <div style="padding: 8px 10px; font-size: 9px; border-bottom: 1px solid #e2e8f0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+        <div><span style="display:inline-block; width:8px; height:8px; background:#16a34a; border-radius:2px;"></span> Answered</div>
+        <div><span style="display:inline-block; width:8px; height:8px; background:#dc2626; border-radius:2px;"></span> Not Answered</div>
+        <div><span style="display:inline-block; width:8px; height:8px; background:#7c3aed; border-radius:2px;"></span> Review</div>
+        <div><span style="display:inline-block; width:8px; height:8px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:2px;"></span> Unvisited</div>
       </div>
 
       <div id="paletteGrid" class="palette-grid"></div>
 
-      <div style="padding: 12px; margin-top: auto; border-top: 1px solid #e2e8f0;">
+      <div style="padding: 10px; margin-top: auto; border-top: 1px solid #e2e8f0;">
         <button onclick="confirmExamSubmit()" class="btn btn-submit">Submit Entire Exam</button>
       </div>
     </div>
 
     <!-- ANTI-CHEAT WARNING OVERLAY -->
     <div id="cheatWarningOverlay" class="cheat-warning-overlay hidden-screen">
-      <div class="card" style="text-align: center; max-width: 300px; border: 2px solid #dc2626;">
-        <div style="margin-bottom: 6px;">
-          <svg class="svg-icon" style="width:28px; height:28px;" fill="#dc2626" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+      <div class="card" style="text-align: center; max-width: 280px; border: 2px solid #dc2626;">
+        <div style="margin-bottom: 4px;">
+          <svg class="svg-icon" style="width:24px; height:24px;" fill="#dc2626" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
         </div>
-        <h3 style="font-size: 15px; font-weight: 700; color: #dc2626;">Anti-Cheat Warning!</h3>
-        <p style="font-size: 11px; color: #475569; margin: 6px 0;" id="warningMsgText">Tab change / window blur detected!</p>
-        <div style="font-size: 11px; font-weight: bold; color: #991b1b; margin-bottom: 12px;" id="warningCountText">Warning 1 of 3</div>
-        <button onclick="dismissWarning()" class="btn" style="background: #dc2626; color: white; width: 100%;">Resume Exam Session</button>
+        <h3 style="font-size: 14px; font-weight: 700; color: #dc2626;">Anti-Cheat Warning!</h3>
+        <p style="font-size: 10px; color: #475569; margin: 4px 0;" id="warningMsgText">Tab change / window blur detected!</p>
+        <div style="font-size: 10px; font-weight: bold; color: #991b1b; margin-bottom: 10px;" id="warningCountText">Warning 1 of 3</div>
+        <button onclick="dismissWarning()" class="btn" style="background: #dc2626; color: white; width: 100%; padding: 8px;">Resume Exam</button>
       </div>
     </div>
 
@@ -364,15 +403,14 @@
     let examData = null;
     let studentName = "";
     let currentIndex = 0;
-    let userAnswers = {}; // { index: optIndex }
-    let qStatus = {}; // { index: 'ans' | 'not-ans' | 'review' | 'visited' }
+    let userAnswers = {}; 
+    let qStatus = {}; 
     let timerInterval = null;
     let remainingSeconds = 0;
     let warnings = 0;
     const MAX_WARNINGS = 3;
     let isExamActive = false;
 
-    // --- ANTI CHEAT DETECTORS ---
     document.addEventListener("visibilitychange", () => {
       if (isExamActive && document.hidden) {
         triggerCheatWarning("Tab switch detected! Stay on exam screen.");
@@ -381,7 +419,7 @@
 
     window.addEventListener("blur", () => {
       if (isExamActive) {
-        triggerCheatWarning("Window focus lost! Focus lost logged.");
+        triggerCheatWarning("Window focus lost!");
       }
     });
 
@@ -392,14 +430,14 @@
         (e.ctrlKey && (e.key === "c" || e.key === "v" || e.key === "u" || e.key === "s" || e.key === "a"))
       ) {
         e.preventDefault();
-        triggerCheatWarning("Shortcut keys strictly disabled!");
+        triggerCheatWarning("Shortcut keys blocked!");
       }
     });
 
     function triggerCheatWarning(reason) {
       if (!isExamActive) return;
       warnings++;
-      document.getElementById('warnCounterBadge').innerText = `Warnings: ${warnings}/${MAX_WARNINGS}`;
+      document.getElementById('warnCounterBadge').innerText = `Warn: ${warnings}/${MAX_WARNINGS}`;
       
       if (warnings >= MAX_WARNINGS) {
         alert("Maximum warnings limit exceeded! Auto-submitting exam...");
@@ -422,8 +460,6 @@
       if (docEl.requestFullscreen) docEl.requestFullscreen().catch(()=>{});
     }
 
-    // --- EXAM LOGIC ---
-
     window.startProctoredExam = async function() {
       studentName = document.getElementById('studentNameInput').value.trim();
       const code = document.getElementById('testCodeInput').value.trim().toUpperCase();
@@ -432,7 +468,7 @@
 
       const startBtn = document.getElementById('startBtn');
       startBtn.disabled = true;
-      startBtn.innerText = "Authenticating Candidate...";
+      startBtn.innerText = "Authenticating...";
 
       try {
         const testsRef = ref(db, 'tests');
@@ -440,7 +476,7 @@
         const snapshot = await get(q);
 
         if (!snapshot.exists()) {
-          alert("Invalid Test Code! Please check again.");
+          alert("Invalid Test Code!");
           startBtn.disabled = false;
           startBtn.innerText = "Enter Online Exam Hall";
           return;
@@ -452,7 +488,7 @@
 
         document.getElementById('examStudentSub').innerText = studentName;
         document.getElementById('examHeaderTitle').innerText = examData.title;
-        document.getElementById('markingSchemeVal').innerText = `+${examData.positiveMarks || 4} / -${examData.negativeMarks || 1} Marks`;
+        document.getElementById('markingSchemeVal').innerText = `+${examData.positiveMarks || 4} / -${examData.negativeMarks || 1}`;
         
         document.getElementById('screenEntry').classList.add('hidden-screen');
         document.getElementById('screenHall').classList.remove('hidden-screen');
@@ -461,7 +497,6 @@
         remainingSeconds = (examData.timeLimit || 15) * 60;
         isExamActive = true;
         
-        // Initialize status
         examData.questions.forEach((_, idx) => { qStatus[idx] = 'unvisited'; });
         qStatus[0] = 'not-ans';
 
@@ -471,7 +506,7 @@
         buildPaletteGrid();
 
       } catch (e) {
-        alert("Error starting exam: " + e.message);
+        alert("Error: " + e.message);
       } finally {
         startBtn.disabled = false;
         startBtn.innerText = "Enter Online Exam Hall";
@@ -487,7 +522,7 @@
 
         if (remainingSeconds <= 0) {
           clearInterval(timerInterval);
-          alert("Time Expired! Submitting your answers.");
+          alert("Time Expired!");
           submitExam();
         }
       }, 1000);
@@ -495,13 +530,13 @@
 
     function renderQ() {
       const q = examData.questions[currentIndex];
-      document.getElementById('qNumberTitle').innerText = `Question No. ${currentIndex + 1} of ${examData.questions.length}`;
+      document.getElementById('qNumberTitle').innerText = `Q.No ${currentIndex + 1} of ${examData.questions.length}`;
 
       let html = `<div class="card">
-        <p style="font-size: 13px; font-weight: 600; line-height: 1.4; color: #0f172a; margin-bottom: 12px;">${q.question}</p>`;
+        <p style="font-size: 12px; font-weight: 600; line-height: 1.35; color: #0f172a; margin-bottom: 10px;">${q.question}</p>`;
 
       if (q.type === 'paragraph' && q.passage) {
-        html += `<div style="background:#f1f5f9; border-left:3px solid #2563eb; padding:8px 10px; font-size:11px; margin-bottom:12px; color:#334155;">${q.passage}</div>`;
+        html += `<div style="background:#f1f5f9; border-left:3px solid #2563eb; padding:6px 8px; font-size:10px; margin-bottom:10px; color:#334155;">${q.passage}</div>`;
       }
 
       q.options.forEach((opt, idx) => {
@@ -590,7 +625,7 @@
     }
 
     window.confirmExamSubmit = function() {
-      if (confirm("Are you sure you want to final submit the examination?")) {
+      if (confirm("Final submit examination?")) {
         submitExam();
       }
     }
@@ -625,7 +660,7 @@
           submittedAt: new Date().toISOString()
         });
       } catch (e) {
-        console.error("Result submission error:", e);
+        console.error(e);
       }
 
       document.getElementById('screenHall').classList.add('hidden-screen');
@@ -635,11 +670,11 @@
       document.getElementById('finalScoreVal').innerText = score;
 
       document.getElementById('resultBreakdown').innerHTML = `
-        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-          <span>Correct Answers (+${pos}):</span> <strong>${correct}</strong>
+        <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
+          <span>Correct (+${pos}):</span> <strong>${correct}</strong>
         </div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-          <span>Incorrect Answers (-${neg}):</span> <strong>${wrong}</strong>
+        <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
+          <span>Incorrect (-${neg}):</span> <strong>${wrong}</strong>
         </div>
         <div style="display:flex; justify-content:space-between;">
           <span>Unanswered:</span> <strong>${unanswered}</strong>
