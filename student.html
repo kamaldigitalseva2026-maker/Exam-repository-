@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ExamPortal Student - Anti-Cheat Exam Engine</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      -webkit-tap-highlight-color: transparent;
+      user-select: none; /* Anti-Copy Protection */
+      -webkit-user-select: none;
+    }
+    body {
+      font-family: 'Roboto', -apple-system, sans-serif;
+      background-color: #0f172a;
+      color: #1e293b;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .android-app {
+      width: 100%;
+      max-width: 440px;
+      height: 100vh;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-bar {
+      background: #4f46e5;
+      color: white;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+      z-index: 10;
+    }
+    
+    .timer-badge {
+      background: #dc2626;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-family: monospace;
+      font-weight: 700;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .warning-badge {
+      background: #f59e0b;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .app-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      position: relative;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 18px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+      margin-bottom: 14px;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 12px 14px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      outline: none;
+      margin-top: 4px;
+      margin-bottom: 10px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 13px;
+      background: #4f46e5;
+      color: white;
+      font-weight: 700;
+      font-size: 13px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-emerald { background: #059669; }
+
+    .opt-btn {
+      width: 100%;
+      text-align: left;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+    .opt-btn.selected {
+      border-color: #4f46e5;
+      background: #eef2ff;
+      color: #4338ca;
+      font-weight: 700;
+    }
+
+    .hidden-screen { display: none !important; }
+    .svg-icon { width: 16px; height: 16px; fill: currentColor; }
+
+    /* Anti-Cheat Overlay Banner */
+    .cheat-warning-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body oncontextmenu="return false;">
+
+  <div class="android-app">
+
+    <!-- HEADER -->
+    <header class="app-bar">
+      <div>
+        <h1 style="font-size: 15px; font-weight: 700;" id="examHeaderTitle">Anti-Cheat Portal</h1>
+        <p style="font-size: 10px; color: #c7d2fe;" id="examStudentSub">Protected Session</p>
+      </div>
+      <div id="examMetaGroup" class="hidden-screen" style="display: flex; gap: 6px; align-items: center;">
+        <div class="warning-badge" id="warnCounterBadge">Warnings: 0/3</div>
+        <div class="timer-badge">
+          ⏳ <span id="timerText">00:00</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <main class="app-content" id="mainContainer">
+
+      <!-- ENTRY SCREEN -->
+      <div id="screenEntry" class="card">
+        <div style="text-align: center; margin-bottom: 16px;">
+          <div style="width: 48px; height: 48px; background: #eef2ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto;">
+            🔒
+          </div>
+          <h2 style="font-size: 18px; font-weight: 700;">Secure Exam Portal</h2>
+          <p style="font-size: 11px; color: #64748b; margin-top: 2px;">Tab switching & copy-paste strict prohibited hain.</p>
+        </div>
+
+        <form onsubmit="event.preventDefault(); startProctoredExam();">
+          <label style="font-size: 11px; font-weight: bold; color: #475569;">Full Name *</label>
+          <input type="text" id="studentNameInput" required placeholder="Enter your official name" class="input-field">
+
+          <label style="font-size: 11px; font-weight: bold; color: #475569;">Test Code *</label>
+          <input type="text" id="testCodeInput" required placeholder="EXAM-XXXX" class="input-field" style="font-family: monospace; font-weight: bold; text-transform: uppercase;">
+
+          <button type="submit" class="btn btn-emerald" style="margin-top: 10px;">
+            Start Protected Exam
+          </button>
+        </form>
+      </div>
+
+      <!-- EXAM HALL -->
+      <div id="screenHall" class="hidden-screen">
+        <div id="questionBox"></div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
+          <button id="prevBtn" onclick="navigateQ(-1)" class="btn" style="width: auto; background: #e2e8f0; color: #334155;">Previous</button>
+          <button id="nextBtn" onclick="navigateQ(1)" class="btn" style="width: auto;">Next Question</button>
+          <button id="submitBtn" onclick="confirmExamSubmit()" class="btn btn-emerald hidden-screen" style="width: auto;">Submit Exam</button>
+        </div>
+      </div>
+
+      <!-- RESULT SCREEN -->
+      <div id="screenResult" class="hidden-screen card" style="text-align: center; padding: 24px 16px;">
+        <h2 style="font-size: 20px; font-weight: 700;">Exam Submitted!</h2>
+        <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Aapka result save ho chuka hai.</p>
+        <div style="background: #4f46e5; color: white; padding: 20px; border-radius: 16px; margin: 16px 0;">
+          <span style="font-size: 10px; uppercase">Final Score</span>
+          <div id="finalScoreVal" style="font-size: 32px; font-weight: bold; font-family: monospace;">0</div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ANTI-CHEAT WARNING MODAL -->
+    <div id="cheatWarningOverlay" class="cheat-warning-overlay hidden-screen">
+      <div class="card" style="text-align: center; max-width: 320px; border: 2px solid #ef4444;">
+        <div style="font-size: 32px; margin-bottom: 8px;">⚠️</div>
+        <h3 style="font-size: 16px; font-weight: 700; color: #dc2626;">Anti-Cheat Warning!</h3>
+        <p style="font-size: 12px; color: #475569; margin: 8px 0;" id="warningMsgText">Tab change ya window minimize karna prohibited hai!</p>
+        <div style="font-size: 11px; font-weight: bold; color: #b91c1c; margin-bottom: 14px;" id="warningCountText">Warning 1 of 3</div>
+        <button onclick="dismissWarning()" class="btn" style="background: #dc2626;">Resume Exam</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBPxAQLct9GHiEa7v5fkdYDwxUyZMyD3X0",
+      authDomain: "rnkx-6c0c3.firebaseapp.com",
+      projectId: "rnkx-6c0c3",
+      storageBucket: "rnkx-6c0c3.firebasestorage.app",
+      messagingSenderId: "742746588610",
+      appId: "1:742746588610:web:3508dfd04b7a42e292025b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let examData = null;
+    let studentName = "";
+    let currentIndex = 0;
+    let userAnswers = {};
+    let timerInterval = null;
+    let remainingSeconds = 0;
+    let warnings = 0;
+    const MAX_WARNINGS = 3;
+    let isExamActive = false;
+
+    // --- ANTI-CHEAT DETECTORS ---
+    
+    // 1. Tab Switch / Window Blur Detection
+    document.addEventListener("visibilitychange", () => {
+      if (isExamActive && document.hidden) {
+        triggerCheatWarning("Tab switch detected! Screen se dur na jayein.");
+      }
+    });
+
+    window.addEventListener("blur", () => {
+      if (isExamActive) {
+        triggerCheatWarning("Window focus lost! Window change na karein.");
+      }
+    });
+
+    // 2. Prevent Keyboard Shortcuts (Inspect, Copy, Paste)
+    document.addEventListener("keydown", (e) => {
+      if (!isExamActive) return;
+      if (
+        e.key === "F12" ||
+        (e.ctrlKey && (e.key === "c" || e.key === "v" || e.key === "u" || e.key === "s" || e.key === "a"))
+      ) {
+        e.preventDefault();
+        triggerCheatWarning("Keyboard shortcut blocked!");
+      }
+    });
+
+    function triggerCheatWarning(reason) {
+      if (!isExamActive) return;
+      warnings++;
+      document.getElementById('warnCounterBadge').innerText = `Warnings: ${warnings}/${MAX_WARNINGS}`;
+      
+      if (warnings >= MAX_WARNINGS) {
+        alert("Maximum warnings reached! Aapka exam automatically submit kiya ja raha hai.");
+        submitExam();
+        return;
+      }
+
+      document.getElementById('warningMsgText').innerText = reason;
+      document.getElementById('warningCountText').innerText = `Warning ${warnings} of ${MAX_WARNINGS}`;
+      document.getElementById('cheatWarningOverlay').classList.remove('hidden-screen');
+    }
+
+    window.dismissWarning = function() {
+      document.getElementById('cheatWarningOverlay').classList.add('hidden-screen');
+      requestFullScreen();
+    }
+
+    function requestFullScreen() {
+      const docEl = document.documentElement;
+      if (docEl.requestFullscreen) docEl.requestFullscreen().catch(()=>{});
+    }
+
+    // --- EXAM LOGIC ---
+
+    window.startProctoredExam = async function() {
+      studentName = document.getElementById('studentNameInput').value.trim();
+      const code = document.getElementById('testCodeInput').value.trim().toUpperCase();
+
+      if (!studentName || !code) return;
+
+      try {
+        const q = query(collection(db, "tests"), where("code", "==", code));
+        const snap = await getDocs(q);
+
+        if (snap.empty) {
+          alert("Invalid Test Code!");
+          return;
+        }
+
+        snap.forEach(doc => examData = doc.data());
+
+        document.getElementById('examStudentSub').innerText = studentName;
+        document.getElementById('examHeaderTitle').innerText = examData.title;
+        document.getElementById('screenEntry').classList.add('hidden-screen');
+        document.getElementById('screenHall').classList.remove('hidden-screen');
+        document.getElementById('examMetaGroup').classList.remove('hidden-screen');
+
+        remainingSeconds = (examData.timeLimit || 15) * 60;
+        isExamActive = true;
+        requestFullScreen();
+        startTimer();
+        renderQ();
+
+      } catch (e) {
+        alert("Error starting exam: " + e.message);
+      }
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        remainingSeconds--;
+        const m = Math.floor(remainingSeconds / 60);
+        const s = remainingSeconds % 60;
+        document.getElementById('timerText').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+
+        if (remainingSeconds <= 0) {
+          clearInterval(timerInterval);
+          alert("Time's up!");
+          submitExam();
+        }
+      }, 1000);
+    }
+
+    function renderQ() {
+      const q = examData.questions[currentIndex];
+      let html = `<div class="card">
+        <span style="font-size: 10px; font-weight: bold; color: #4f46e5;">QUESTION ${currentIndex + 1} OF ${examData.questions.length}</span>
+        <h3 style="font-size: 14px; font-weight: 700; margin: 6px 0 12px 0;">${q.question}</h3>`;
+
+      if (q.type === 'paragraph' && q.passage) {
+        html += `<div style="background:#eef2ff; padding:10px; border-radius:10px; font-size:11px; margin-bottom:10px;">${q.passage}</div>`;
+      }
+
+      q.options.forEach((opt, idx) => {
+        const sel = userAnswers[currentIndex] === idx;
+        html += `<button onclick="selectOpt(${idx})" class="opt-btn ${sel ? 'selected' : ''}">${String.fromCharCode(65 + idx)}. ${opt}</button>`;
+      });
+
+      html += `</div>`;
+      document.getElementById('questionBox').innerHTML = html;
+
+      document.getElementById('prevBtn').style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
+      if (currentIndex === examData.questions.length - 1) {
+        document.getElementById('nextBtn').classList.add('hidden-screen');
+        document.getElementById('submitBtn').classList.remove('hidden-screen');
+      } else {
+        document.getElementById('nextBtn').classList.remove('hidden-screen');
+        document.getElementById('submitBtn').classList.add('hidden-screen');
+      }
+    }
+
+    window.selectOpt = function(idx) {
+      userAnswers[currentIndex] = idx;
+      renderQ();
+    }
+
+    window.navigateQ = function(dir) {
+      currentIndex += dir;
+      renderQ();
+    }
+
+    window.confirmExamSubmit = function() {
+      if (confirm("Kya aap exam submit karna chahte hain?")) submitExam();
+    }
+
+    async function submitExam() {
+      isExamActive = false;
+      if (timerInterval) clearInterval(timerInterval);
+
+      let correct = 0, wrong = 0, unanswered = 0;
+      examData.questions.forEach((q, idx) => {
+        const ans = userAnswers[idx];
+        if (ans === undefined) unanswered++;
+        else if (ans === q.correct) correct++;
+        else wrong++;
+      });
+
+      const score = (correct * (examData.positiveMarks || 4)) - (wrong * (examData.negativeMarks || 1));
+
+      try {
+        await addDoc(collection(db, "results"), {
+          testCode: examData.code,
+          studentName: studentName,
+          score: score,
+          correct: correct,
+          wrong: wrong,
+          warningsCount: warnings,
+          submittedAt: new Date().toISOString()
+        });
+      } catch (e) {}
+
+      document.getElementById('screenHall').classList.add('hidden-screen');
+      document.getElementById('examMetaGroup').classList.add('hidden-screen');
+      document.getElementById('screenResult').classList.remove('hidden-screen');
+      document.getElementById('finalScoreVal').innerText = score;
+
+      if (document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+    }
+
+    // Auto load via URL ?code=EXAM-XXXX
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      if (code) {
+        document.getElementById('testCodeInput').value = code.toUpperCase();
+      }
+    });
+  </script>
+</body>
+</html>

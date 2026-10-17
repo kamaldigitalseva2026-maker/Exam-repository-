@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ExamPortal Admin - Realtime Database</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: 'Roboto', -apple-system, sans-serif;
+      background-color: #0f172a;
+      color: #1e293b;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      user-select: none;
+    }
+
+    /* Android Mobile Shell */
+    .android-app {
+      width: 100%;
+      max-width: 420px;
+      height: 100vh;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+    @media (min-height: 650px) and (min-width: 440px) {
+      .android-app { height: 92vh; border-radius: 36px; border: 2px solid #334155; }
+    }
+
+    /* Top Action Bar */
+    .app-bar {
+      background: #4f46e5;
+      color: white;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+      z-index: 10;
+    }
+    .app-title-group { display: flex; align-items: center; gap: 10px; }
+    .app-icon {
+      width: 38px; height: 38px; background: rgba(255,255,255,0.2);
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    }
+    .app-title h1 { font-size: 16px; font-weight: 700; line-height: 1.2; }
+    .app-title p { font-size: 10px; color: #c7d2fe; font-weight: 500; }
+
+    /* Scrollable App Body */
+    .app-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      position: relative;
+    }
+
+    /* Material Cards */
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 18px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+      margin-bottom: 14px;
+    }
+
+    /* Form Controls */
+    label { font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-top: 8px; }
+    .input-field {
+      width: 100%;
+      padding: 12px 14px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      outline: none;
+      margin-top: 4px;
+      margin-bottom: 10px;
+    }
+    .input-field:focus { border-color: #4f46e5; background: #ffffff; }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 13px;
+      background: #4f46e5;
+      color: white;
+      font-weight: 700;
+      font-size: 13px;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-emerald { background: #059669; box-shadow: 0 4px 10px rgba(5, 150, 105, 0.25); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .hidden-screen { display: none !important; }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      background: #ffffff;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      padding: 6px 12px;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 6px;
+      background: transparent;
+      border: none;
+      font-size: 10px;
+      font-weight: 700;
+      color: #64748b;
+      cursor: pointer;
+      border-radius: 12px;
+    }
+    .nav-item svg { fill: #64748b; margin-bottom: 2px; }
+    .nav-item.active { color: #4f46e5; background: #eef2ff; }
+    .nav-item.active svg { fill: #4f46e5; }
+
+    .svg-icon { width: 18px; height: 18px; display: inline-block; vertical-align: middle; }
+    .svg-icon-lg { width: 24px; height: 24px; }
+
+    /* Toast */
+    #toast {
+      position: absolute;
+      bottom: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0f172a;
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 12px;
+      font-weight: 500;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+      z-index: 50;
+      white-space: nowrap;
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+  </style>
+</head>
+<body>
+
+  <div class="android-app">
+
+    <!-- TOP APP BAR -->
+    <header class="app-bar">
+      <div class="app-title-group">
+        <div class="app-icon">
+          <svg class="svg-icon-lg" fill="#ffffff" viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>
+        </div>
+        <div class="app-title">
+          <h1>ExamPortal Admin</h1>
+          <p>Realtime Database Engine</p>
+        </div>
+      </div>
+      <div style="font-size: 11px; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 12px; font-weight: bold;">RTDB</div>
+    </header>
+
+    <!-- CONTENT BODY -->
+    <main class="app-content" id="scrollContainer">
+
+      <!-- SCREEN 1: CREATE TEST -->
+      <div id="screenCreate" class="screen">
+        <div class="card" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; border: none;">
+          <span style="background: rgba(255,255,255,0.2); font-size: 9px; font-weight: 700; padding: 3px 8px; border-radius: 10px; text-transform: uppercase;">Realtime Sync</span>
+          <h2 style="font-size: 18px; font-weight: 700; margin-top: 6px;">Create Live Exam</h2>
+          <p style="font-size: 11px; color: #e0e7ff; margin-top: 2px;">Realtime database par instant test publish karein.</p>
+        </div>
+
+        <div class="card">
+          <div style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px;">
+            <svg class="svg-icon" fill="#4f46e5" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+            <h3 style="font-size: 14px; font-weight: 700; color: #0f172a;">Test Settings</h3>
+          </div>
+          
+          <label>Test Title *</label>
+          <input type="text" id="testTitleInput" placeholder="e.g. Physics Mock Test" class="input-field">
+          
+          <div class="grid-2">
+            <div>
+              <label>Time (Minutes) *</label>
+              <input type="number" id="testTimeInput" value="15" min="1" class="input-field">
+            </div>
+            <div class="grid-2" style="gap: 6px;">
+              <div>
+                <label style="color: #059669;">+ Positive</label>
+                <input type="number" id="posMarksInput" value="4" class="input-field" style="color: #059669; font-weight: bold;">
+              </div>
+              <div>
+                <label style="color: #dc2626;">- Negative</label>
+                <input type="number" id="negMarksInput" value="1" class="input-field" style="color: #dc2626; font-weight: bold;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <svg class="svg-icon" fill="#0f172a" viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+            <h3 style="font-size: 14px; font-weight: 700; color: #0f172a;">Questions List</h3>
+          </div>
+          <span id="qBadgeCount" style="font-size: 10px; background: #eef2ff; color: #4f46e5; font-weight: 700; padding: 2px 8px; border-radius: 10px;">1 Question</span>
+        </div>
+
+        <div id="questionListContainer"></div>
+
+        <button onclick="addQuestionCard()" class="btn" style="background: #eef2ff; color: #4f46e5; border: 1px dashed #c7d2fe; box-shadow: none; margin-bottom: 14px;">
+          <svg class="svg-icon" fill="#4f46e5" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          Add Another Question
+        </button>
+
+        <button onclick="publishTestToRealtimeDB()" class="btn btn-emerald" id="publishBtn">
+          <svg class="svg-icon" fill="#ffffff" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          Publish to Realtime DB
+        </button>
+      </div>
+
+      <!-- SCREEN 2: VIEW RESULTS -->
+      <div id="screenResults" class="screen hidden-screen">
+        <div class="card">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+            <svg class="svg-icon" fill="#4f46e5" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+            <h3 style="font-size: 14px; font-weight: 700;">Realtime Leaderboard</h3>
+          </div>
+          <label>Enter Test Code</label>
+          <div style="display: flex; gap: 8px; margin-top: 4px;">
+            <input type="text" id="searchResultCode" placeholder="e.g. EXAM-4812" class="input-field" style="margin: 0; font-family: monospace; font-weight: bold; text-transform: uppercase;">
+            <button onclick="fetchRealtimeResults()" class="btn" style="width: 90px; padding: 0; margin: 0;">Fetch</button>
+          </div>
+        </div>
+
+        <div id="adminResultsList">
+          <p style="font-size: 12px; color: #64748b; text-align: center; padding: 20px;">Code enter karke live scores dekhein.</p>
+        </div>
+      </div>
+
+      <!-- SCREEN 3: SUCCESS -->
+      <div id="screenSuccess" class="screen hidden-screen">
+        <div class="card" style="text-align: center; padding: 24px 16px;">
+          <div style="width: 50px; height: 50px; background: #ecfdf5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+            <svg class="svg-icon-lg" fill="#059669" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+          </div>
+          <h2 style="font-size: 18px; font-weight: 700; color: #0f172a;">Test Published Live!</h2>
+          <p style="font-size: 11px; color: #64748b; margin-top: 2px;">Realtime database par test live ho chuka hai.</p>
+
+          <div style="background: #f8fafc; padding: 14px; border-radius: 14px; border: 1px solid #e2e8f0; margin: 16px 0;">
+            <label>Unique Test Code</label>
+            <div id="generatedCodeDisplay" style="font-size: 24px; font-family: monospace; font-weight: 800; color: #4f46e5; margin: 6px 0;">EXAM-XXXX</div>
+            <button onclick="copyToClipboard('generatedCodeDisplay', 'Code')" style="background: white; border: 1px solid #cbd5e1; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+              <svg class="svg-icon" fill="#475569" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+              Copy Code
+            </button>
+          </div>
+
+          <div style="text-align: left; margin-bottom: 16px;">
+            <label>Direct Share Link</label>
+            <div style="display: flex; gap: 6px; margin-top: 4px;">
+              <input type="text" id="generatedLinkInput" readonly class="input-field" style="margin: 0; font-family: monospace; font-size: 10px;">
+              <button onclick="copyToClipboard('generatedLinkInput', 'Link', true)" class="btn" style="width: 70px; margin: 0; padding: 0; font-size: 11px;">Copy</button>
+            </div>
+          </div>
+
+          <button onclick="switchTab('create')" class="btn" style="background: #0f172a;">
+            <svg class="svg-icon" fill="#ffffff" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Create Another Test
+          </button>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+      <button onclick="switchTab('create')" id="navBtnCreate" class="nav-item active">
+        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        <span>Create Test</span>
+      </button>
+      <button onclick="switchTab('results')" id="navBtnResults" class="nav-item">
+        <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+        <span>View Results</span>
+      </button>
+    </nav>
+
+    <!-- TOAST -->
+    <div id="toast" class="hidden-screen"><span id="toastMsg">Notification</span></div>
+
+  </div>
+
+  <!-- FIREBASE REALTIME DATABASE SDK v10 -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, push, set, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBPxAQLct9GHiEa7v5fkdYDwxUyZMyD3X0",
+      authDomain: "rnkx-6c0c3.firebaseapp.com",
+      databaseURL: "https://rnkx-6c0c3-default-rtdb.firebaseio.com",
+      projectId: "rnkx-6c0c3",
+      storageBucket: "rnkx-6c0c3.firebasestorage.app",
+      messagingSenderId: "742746588610",
+      appId: "1:742746588610:web:3508dfd04b7a42e292025b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.showToast = function(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toastMsg').innerText = msg;
+      t.classList.remove('hidden-screen');
+      setTimeout(() => t.classList.add('hidden-screen'), 3000);
+    }
+
+    window.switchTab = function(tab) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden-screen'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+      if(tab === 'create') {
+        document.getElementById('screenCreate').classList.remove('hidden-screen');
+        document.getElementById('navBtnCreate').classList.add('active');
+      } else if(tab === 'results') {
+        document.getElementById('screenResults').classList.remove('hidden-screen');
+        document.getElementById('navBtnResults').classList.add('active');
+      }
+      document.getElementById('scrollContainer').scrollTop = 0;
+    }
+
+    let qCount = 0;
+    window.addQuestionCard = function() {
+      qCount++;
+      const container = document.getElementById('questionListContainer');
+      const card = document.createElement('div');
+      card.className = "card q-card";
+      card.style.background = "#f8fafc";
+
+      card.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">
+          <select class="q-type input-field" style="width: 150px; margin: 0; padding: 4px 8px; font-size: 11px; font-weight: bold; color: #4f46e5;" onchange="toggleP(this)">
+            <option value="mcq">MCQ Question</option>
+            <option value="paragraph">Paragraph Based</option>
+          </select>
+          <button onclick="removeCard(this)" style="background: none; border: none; color: #dc2626; font-weight: bold; font-size: 11px; cursor: pointer; display: flex; align-items: center; gap: 2px;">
+            <svg class="svg-icon" fill="#dc2626" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            Remove
+          </button>
+        </div>
+
+        <div class="p-box hidden-screen" style="margin-bottom: 8px;">
+          <label>Reading Passage / Paragraph</label>
+          <textarea class="q-passage input-field" rows="2" placeholder="Passage text..."></textarea>
+        </div>
+
+        <label>Question Statement *</label>
+        <input type="text" class="q-text input-field" placeholder="Enter question...">
+
+        <div class="grid-2">
+          <input type="text" class="q-opt input-field" placeholder="Option A">
+          <input type="text" class="q-opt input-field" placeholder="Option B">
+          <input type="text" class="q-opt input-field" placeholder="Option C">
+          <input type="text" class="q-opt input-field" placeholder="Option D">
+        </div>
+
+        <label>Correct Answer Key</label>
+        <select class="q-correct input-field" style="background: #ecfdf5; color: #059669; font-weight: bold; margin-bottom: 0;">
+          <option value="0">Correct: Option A</option>
+          <option value="1">Correct: Option B</option>
+          <option value="2">Correct: Option C</option>
+          <option value="3">Correct: Option D</option>
+        </select>
+      `;
+
+      container.appendChild(card);
+      updateQBadge();
+    }
+
+    window.removeCard = function(btn) {
+      btn.closest('.q-card').remove();
+      updateQBadge();
+    }
+
+    function updateQBadge() {
+      const count = document.querySelectorAll('.q-card').length;
+      document.getElementById('qBadgeCount').innerText = `${count} Question${count > 1 ? 's' : ''}`;
+    }
+
+    window.toggleP = function(select) {
+      const pBox = select.closest('.q-card').querySelector('.p-box');
+      if(select.value === 'paragraph') pBox.classList.remove('hidden-screen');
+      else pBox.classList.add('hidden-screen');
+    }
+
+    // Publish to Realtime Database
+    window.publishTestToRealtimeDB = async function() {
+      const titleInput = document.getElementById('testTitleInput');
+      const title = titleInput ? titleInput.value.trim() : "";
+      const timeLimit = parseInt(document.getElementById('testTimeInput').value) || 15;
+      const positiveMarks = parseFloat(document.getElementById('posMarksInput').value) || 4;
+      const negativeMarks = parseFloat(document.getElementById('negMarksInput').value) || 1;
+
+      if(!title) { 
+        showToast("Kripya Test Title enter karein!"); 
+        return; 
+      }
+
+      const qCards = document.querySelectorAll('.q-card');
+      let questions = [];
+
+      qCards.forEach(card => {
+        const type = card.querySelector('.q-type').value;
+        const passage = card.querySelector('.q-passage').value.trim();
+        const question = card.querySelector('.q-text').value.trim();
+        const options = Array.from(card.querySelectorAll('.q-opt')).map(i => i.value.trim());
+        const correct = parseInt(card.querySelector('.q-correct').value);
+
+        if(question && options.length === 4 && options.every(o => o !== "")) {
+          questions.push({ type, passage, question, options, correct });
+        }
+      });
+
+      if(questions.length === 0) { 
+        showToast("Atleast 1 question ke saare options fill karein!"); 
+        return; 
+      }
+
+      const publishBtn = document.getElementById('publishBtn');
+      publishBtn.disabled = true;
+      publishBtn.innerText = "Publishing live...";
+
+      const code = "EXAM-" + Math.floor(1000 + Math.random() * 9000);
+
+      try {
+        const newTestRef = push(ref(db, 'tests'));
+        await set(newTestRef, {
+          code, 
+          title, 
+          timeLimit, 
+          positiveMarks, 
+          negativeMarks, 
+          questions, 
+          createdAt: new Date().toISOString()
+        });
+
+        document.getElementById('generatedCodeDisplay').innerText = code;
+        
+        const currentPath = window.location.pathname;
+        const studentPath = currentPath.includes('index.html') ? currentPath.replace('index.html', 'student.html') : currentPath + 'student.html';
+        const studentLink = `${window.location.origin}${studentPath}?code=${code}`;
+        document.getElementById('generatedLinkInput').value = studentLink;
+
+        document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden-screen'));
+        document.getElementById('screenSuccess').classList.remove('hidden-screen');
+        showToast("Test Realtime DB par live ho gaya!");
+      } catch(e) {
+        console.error("RTDB Error:", e);
+        alert("Publishing Failed: " + e.message);
+      } finally {
+        publishBtn.disabled = false;
+        publishBtn.innerHTML = `
+          <svg class="svg-icon" fill="#ffffff" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+          Publish to Realtime DB
+        `;
+      }
+    }
+
+    // Fetch Results from Realtime Database
+    window.fetchRealtimeResults = async function() {
+      const code = document.getElementById('searchResultCode').value.trim().toUpperCase();
+      if(!code) { showToast("Test code enter karein!"); return; }
+
+      const resList = document.getElementById('adminResultsList');
+      resList.innerHTML = `<p style="font-size: 12px; color: #64748b; text-align: center; padding: 20px;">Fetching live scores...</p>`;
+
+      try {
+        const resultsRef = ref(db, 'results');
+        const q = query(resultsRef, orderByChild('testCode'), equalTo(code));
+        const snapshot = await get(q);
+
+        if(!snapshot.exists()) {
+          resList.innerHTML = `<p style="font-size: 12px; color: #64748b; text-align: center; padding: 20px;">Is code ke liye koi submissions nahi mile.</p>`;
+          return;
+        }
+
+        let html = '';
+        let list = [];
+        snapshot.forEach((childSnap) => {
+          list.push(childSnap.val());
+        });
+        list.sort((a, b) => b.score - a.score);
+
+        list.forEach((r, idx) => {
+          html += `
+            <div class="card" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; margin-bottom: 8px;">
+              <div>
+                <strong style="font-size: 12px; color: #0f172a;">#${idx + 1} ${r.studentName}</strong>
+                <p style="font-size: 10px; color: #64748b;">${r.correct} Correct, ${r.wrong} Wrong</p>
+              </div>
+              <span style="font-weight: 800; font-size: 14px; color: #4f46e5;">${r.score} Marks</span>
+            </div>
+          `;
+        });
+        resList.innerHTML = html;
+      } catch(e) {
+        showToast("Error fetching results: " + e.message);
+      }
+    }
+
+    window.copyToClipboard = function(id, type, isInput = false) {
+      const text = isInput ? document.getElementById(id).value : document.getElementById(id).innerText;
+      navigator.clipboard.writeText(text);
+      showToast(`${type} copied to clipboard!`);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      window.addQuestionCard();
+    });
+  </script>
+</body>
+</html>
