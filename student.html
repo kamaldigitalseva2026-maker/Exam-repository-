@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>NTA Entrance Exam Portal - Anti-Cheat Hall</title>
+  <title>Group Study Quiz Mode - Realtime Chat</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
@@ -14,17 +14,6 @@
       -webkit-tap-highlight-color: transparent;
       user-select: none;
       -webkit-user-select: none;
-    }
-
-    @keyframes fadeInScale {
-      0% { opacity: 0; transform: scale(0.95) translateY(10px); }
-      100% { opacity: 1; transform: scale(1) translateY(0); }
-    }
-
-    @keyframes pulseGlow {
-      0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
-      70% { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
     }
 
     body {
@@ -38,7 +27,6 @@
       overflow: hidden;
     }
 
-    /* Screen Frame - Centered & No Scroll */
     .exam-app {
       width: 100%;
       max-width: 440px;
@@ -51,8 +39,6 @@
       position: relative;
       overflow: hidden;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-      border-radius: 0;
-      animation: fadeInScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
     @media (min-width: 480px) {
@@ -62,7 +48,6 @@
       }
     }
 
-    /* Top NTA Header Bar */
     .app-bar {
       background: #1e293b;
       color: #ffffff;
@@ -75,7 +60,7 @@
     }
     
     .timer-badge {
-      background: #dc2626;
+      background: #2563eb;
       color: #ffffff;
       padding: 4px 8px;
       border-radius: 6px;
@@ -87,16 +72,6 @@
       gap: 4px;
     }
 
-    .warning-badge {
-      background: #d97706;
-      color: #ffffff;
-      padding: 4px 6px;
-      border-radius: 6px;
-      font-size: 10px;
-      font-weight: 700;
-    }
-
-    /* App Content Centered */
     .app-content {
       flex: 1;
       display: flex;
@@ -114,11 +89,8 @@
       padding: 14px;
       border: 1px solid #cbd5e1;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-      transition: all 0.3s ease;
-      animation: fadeInScale 0.3s ease forwards;
     }
 
-    /* Input Fields */
     .input-field {
       width: 100%;
       padding: 9px 12px;
@@ -130,11 +102,9 @@
       outline: none;
       margin-top: 4px;
       margin-bottom: 10px;
-      transition: all 0.2s;
     }
     .input-field:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
 
-    /* NTA Option Item Design with Hover Animation */
     .opt-label {
       display: flex;
       align-items: flex-start;
@@ -147,19 +117,13 @@
       font-weight: 500;
       cursor: pointer;
       margin-bottom: 6px;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .opt-label:hover {
-      border-color: #93c5fd;
-      background: #f8fafc;
-      transform: translateX(2px);
+      transition: all 0.15s;
     }
     .opt-label.selected {
       border-color: #2563eb;
       background: #eff6ff;
       color: #1e40af;
       font-weight: 600;
-      transform: translateX(4px);
     }
     .opt-radio {
       margin-top: 2px;
@@ -168,7 +132,6 @@
       height: 15px;
     }
 
-    /* Button System with High Animation */
     .btn {
       padding: 9px 12px;
       font-weight: 600;
@@ -180,24 +143,19 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: all 0.2s ease;
     }
-    .btn:active { transform: scale(0.97); }
-    .btn-save { background: #16a34a; color: white; animation: pulseGlow 2.5s infinite; }
-    .btn-save:hover { background: #15803d; }
+    .btn-save { background: #16a34a; color: white; }
     .btn-review { background: #7c3aed; color: white; }
-    .btn-review:hover { background: #6d28d9; }
     .btn-clear { background: #e2e8f0; color: #334155; border: 1px solid #cbd5e1; }
-    .btn-clear:hover { background: #cbd5e1; }
     .btn-submit { background: #dc2626; color: white; width: 100%; padding: 11px; border-radius: 8px; font-size: 13px; }
 
-    /* Question Palette Modal Grid Drawer */
-    .palette-drawer {
+    /* Chat Drawer */
+    .chat-drawer {
       position: absolute;
       top: 0;
       right: 0;
       bottom: 0;
-      width: 260px;
+      width: 280px;
       background: #ffffff;
       border-left: 1px solid #cbd5e1;
       box-shadow: -8px 0 24px rgba(0,0,0,0.2);
@@ -207,176 +165,120 @@
       transform: translateX(100%);
       transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .palette-drawer.open { transform: translateX(0); }
+    .chat-drawer.open { transform: translateX(0); }
 
-    .palette-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
+    .chat-messages {
+      flex: 1;
       padding: 10px;
-      max-height: 280px;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: #f8fafc;
     }
 
-    .q-btn {
-      width: 38px;
-      height: 34px;
+    .chat-bubble {
+      background: #e2e8f0;
+      padding: 6px 10px;
+      border-radius: 8px;
       font-size: 11px;
-      font-weight: 700;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      background: #f1f5f9;
-      color: #334155;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s;
+      max-width: 85%;
     }
-    .q-btn:hover { transform: scale(1.05); }
-    .q-btn.ans { background: #16a34a; color: white; border-color: #15803d; }
-    .q-btn.not-ans { background: #dc2626; color: white; border-color: #b91c1c; }
-    .q-btn.review { background: #7c3aed; color: white; border-color: #6d28d9; }
-    .q-btn.active { box-shadow: 0 0 0 2px #2563eb; border-color: #2563eb; }
+    .chat-bubble.mine {
+      background: #dbeafe;
+      align-self: flex-end;
+      color: #1e40af;
+    }
 
     .hidden-screen { display: none !important; }
     .svg-icon { width: 15px; height: 15px; fill: currentColor; display: inline-block; vertical-align: middle; }
-
-    /* Cheat Modal */
-    .cheat-warning-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.92);
-      backdrop-filter: blur(8px);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      animation: fadeInScale 0.2s ease;
-    }
   </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
   <div class="exam-app">
 
     <!-- TOP HEADER -->
     <header class="app-bar">
       <div>
-        <h1 style="font-size: 13px; font-weight: 700;" id="examHeaderTitle">NTA CBT Entrance Portal</h1>
-        <p style="font-size: 9px; color: #94a3b8;" id="examStudentSub">Proctored Session</p>
+        <h1 style="font-size: 13px; font-weight: 700;" id="examHeaderTitle">Group Study Portal</h1>
+        <p style="font-size: 9px; color: #94a3b8;" id="examStudentSub">Discussion Mode</p>
       </div>
       <div id="examMetaGroup" class="hidden-screen" style="display: flex; gap: 6px; align-items: center;">
-        <div class="warning-badge" id="warnCounterBadge">Warn: 0/3</div>
         <div class="timer-badge">
           <svg class="svg-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
           <span id="timerText">00:00</span>
         </div>
-        <button onclick="togglePalette()" style="background: #334155; border: 1px solid #475569; color: white; padding: 4px 6px; border-radius: 5px; font-size: 10px; cursor: pointer; font-weight: 600;">
-          Palette
+        <button onclick="toggleChat()" style="background: #2563eb; border: none; color: white; padding: 4px 8px; border-radius: 5px; font-size: 10px; cursor: pointer; font-weight: 600;">
+          Live Chat 💬
         </button>
       </div>
     </header>
 
-    <!-- CONTENT AREA (CENTERED, NO SCROLL) -->
+    <!-- CONTENT AREA -->
     <main class="app-content" id="mainContainer">
 
       <!-- ENTRY / CANDIDATE LOGIN SCREEN -->
       <div id="screenEntry" class="card">
-        <div style="border-bottom: 2px solid #2563eb; padding-bottom: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
-          <h2 style="font-size: 15px; font-weight: 700; color: #1e293b;">Candidate Exam Gate</h2>
-          <span style="font-size: 9px; background: #dbeafe; color: #1e40af; font-weight: 700; padding: 2px 5px; border-radius: 4px;">NTA CBT</span>
+        <div style="border-bottom: 2px solid #2563eb; padding-bottom: 6px; margin-bottom: 10px;">
+          <h2 style="font-size: 15px; font-weight: 700; color: #1e293b;">Join Group Study Quiz</h2>
+          <span style="font-size: 9px; background: #dbeafe; color: #1e40af; font-weight: 700; padding: 2px 5px; border-radius: 4px;">Collaborative Mode</span>
         </div>
 
-        <form onsubmit="event.preventDefault(); startProctoredExam();">
-          <label style="font-size: 10px; font-weight: 700; color: #475569; text-transform: uppercase;">Candidate Full Name *</label>
-          <input type="text" id="studentNameInput" required placeholder="Enter full name" class="input-field">
+        <form onsubmit="event.preventDefault(); startQuizSession();">
+          <label style="font-size: 10px; font-weight: 700; color: #475569; text-transform: uppercase;">Your Name *</label>
+          <input type="text" id="studentNameInput" required placeholder="Enter your name" class="input-field">
 
-          <label style="font-size: 10px; font-weight: 700; color: #475569; text-transform: uppercase;">Test Security Code *</label>
+          <label style="font-size: 10px; font-weight: 700; color: #475569; text-transform: uppercase;">Group Test Code *</label>
           <input type="text" id="testCodeInput" required placeholder="EXAM-XXXX" class="input-field" style="font-family: monospace; font-weight: bold; text-transform: uppercase;">
 
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px; border-radius: 6px; font-size: 10px; color: #475569; margin-bottom: 10px;">
-            <strong>Security Notice:</strong> Full screen lock & 3-warning anti-cheat active.
-          </div>
-
           <button type="submit" class="btn btn-save" id="startBtn" style="width: 100%; padding: 11px;">
-            Enter Online Exam Hall
+            Join Room & Start Quiz
           </button>
         </form>
       </div>
 
-      <!-- MAIN EXAM HALL -->
+      <!-- MAIN QUIZ HALL -->
       <div id="screenHall" class="hidden-screen">
-        
-        <!-- Question Meta Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; background: #ffffff; padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
           <span style="font-size: 11px; font-weight: 700; color: #2563eb;" id="qNumberTitle">Question No. 1</span>
-          <span style="font-size: 9px; background: #f1f5f9; color: #475569; font-weight: bold; padding: 2px 5px; border-radius: 4px;" id="markingSchemeVal">+4 / -1</span>
+          <span style="font-size: 9px; background: #f1f5f9; color: #475569; font-weight: bold; padding: 2px 5px; border-radius: 4px;" id="markingSchemeVal">Practice Quiz</span>
         </div>
 
         <div id="questionBox"></div>
 
-        <!-- Action Controls Bar -->
         <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 10px;">
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
             <button onclick="saveAndNext()" class="btn btn-save">Save & Next</button>
-            <button onclick="markForReview()" class="btn btn-review">Mark Review</button>
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
             <button onclick="clearResponse()" class="btn btn-clear">Clear</button>
-            <button onclick="togglePalette()" class="btn" style="background: #334155; color: white;">Open Palette</button>
           </div>
         </div>
-
       </div>
 
-      <!-- RESULT / SUBMISSION SCREEN -->
+      <!-- RESULT SCREEN -->
       <div id="screenResult" class="hidden-screen card" style="text-align: center; padding: 16px 12px;">
-        <h2 style="font-size: 16px; font-weight: 700; color: #16a34a;">Examination Submitted</h2>
-        <p style="font-size: 11px; color: #64748b; margin-top: 2px;">Responses securely synced to Realtime DB.</p>
-        
+        <h2 style="font-size: 16px; font-weight: 700; color: #16a34a;">Quiz Completed</h2>
         <div style="background: #1e293b; color: white; padding: 14px; border-radius: 10px; margin: 12px 0;">
-          <span style="font-size: 9px; letter-spacing: 0.5px; text-transform: uppercase; color: #94a3b8;">Final Score</span>
+          <span style="font-size: 9px; text-transform: uppercase; color: #94a3b8;">Your Score</span>
           <div id="finalScoreVal" style="font-size: 28px; font-weight: bold; font-family: monospace; color: #38bdf8;">0</div>
         </div>
-
         <div id="resultBreakdown" style="font-size: 11px; text-align: left; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;"></div>
       </div>
 
     </main>
 
-    <!-- RIGHT SLIDING QUESTION PALETTE MATRIX -->
-    <div id="paletteDrawer" class="palette-drawer">
+    <!-- LIVE CHAT DRAWER -->
+    <div id="chatDrawer" class="chat-drawer">
       <div style="padding: 10px 12px; background: #1e293b; color: white; display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="font-size: 12px; font-weight: 700;">Question Palette</h3>
-        <button onclick="togglePalette()" style="background: none; border: none; color: white; font-weight: bold; font-size: 14px; cursor: pointer;">✕</button>
+        <h3 style="font-size: 12px; font-weight: 700;">Participant Discussion</h3>
+        <button onclick="toggleChat()" style="background: none; border: none; color: white; font-weight: bold; font-size: 14px; cursor: pointer;">✕</button>
       </div>
 
-      <div style="padding: 8px 10px; font-size: 9px; border-bottom: 1px solid #e2e8f0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
-        <div><span style="display:inline-block; width:8px; height:8px; background:#16a34a; border-radius:2px;"></span> Answered</div>
-        <div><span style="display:inline-block; width:8px; height:8px; background:#dc2626; border-radius:2px;"></span> Not Answered</div>
-        <div><span style="display:inline-block; width:8px; height:8px; background:#7c3aed; border-radius:2px;"></span> Review</div>
-        <div><span style="display:inline-block; width:8px; height:8px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:2px;"></span> Unvisited</div>
-      </div>
+      <div id="chatMessages" class="chat-messages"></div>
 
-      <div id="paletteGrid" class="palette-grid"></div>
-
-      <div style="padding: 10px; margin-top: auto; border-top: 1px solid #e2e8f0;">
-        <button onclick="confirmExamSubmit()" class="btn btn-submit">Submit Entire Exam</button>
-      </div>
-    </div>
-
-    <!-- ANTI-CHEAT WARNING OVERLAY -->
-    <div id="cheatWarningOverlay" class="cheat-warning-overlay hidden-screen">
-      <div class="card" style="text-align: center; max-width: 280px; border: 2px solid #dc2626;">
-        <div style="margin-bottom: 4px;">
-          <svg class="svg-icon" style="width:24px; height:24px;" fill="#dc2626" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-        </div>
-        <h3 style="font-size: 14px; font-weight: 700; color: #dc2626;">Anti-Cheat Warning!</h3>
-        <p style="font-size: 10px; color: #475569; margin: 4px 0;" id="warningMsgText">Tab change / window blur detected!</p>
-        <div style="font-size: 10px; font-weight: bold; color: #991b1b; margin-bottom: 10px;" id="warningCountText">Warning 1 of 3</div>
-        <button onclick="dismissWarning()" class="btn" style="background: #dc2626; color: white; width: 100%; padding: 8px;">Resume Exam</button>
+      <div style="padding: 8px; background: #ffffff; border-top: 1px solid #cbd5e1; display: flex; gap: 6px;">
+        <input type="text" id="chatInput" placeholder="Discuss question..." class="input-field" style="margin:0; font-size:11px;" onkeydown="if(event.key==='Enter') sendChatMessage()">
+        <button onclick="sendChatMessage()" class="btn" style="background:#2563eb; color:white; padding: 0 10px;">Send</button>
       </div>
     </div>
 
@@ -385,7 +287,7 @@
   <!-- FIREBASE REALTIME DATABASE SDK v10 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, push, set, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, push, set, get, query, orderByChild, equalTo, onChildAdded } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBPxAQLct9GHiEa7v5fkdYDwxUyZMyD3X0",
@@ -402,83 +304,31 @@
 
     let examData = null;
     let studentName = "";
+    let testCode = "";
     let currentIndex = 0;
-    let userAnswers = {}; 
-    let qStatus = {}; 
+    let userAnswers = {};
     let timerInterval = null;
     let remainingSeconds = 0;
-    let warnings = 0;
-    const MAX_WARNINGS = 3;
-    let isExamActive = false;
 
-    document.addEventListener("visibilitychange", () => {
-      if (isExamActive && document.hidden) {
-        triggerCheatWarning("Tab switch detected! Stay on exam screen.");
-      }
-    });
-
-    window.addEventListener("blur", () => {
-      if (isExamActive) {
-        triggerCheatWarning("Window focus lost!");
-      }
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (!isExamActive) return;
-      if (
-        e.key === "F12" ||
-        (e.ctrlKey && (e.key === "c" || e.key === "v" || e.key === "u" || e.key === "s" || e.key === "a"))
-      ) {
-        e.preventDefault();
-        triggerCheatWarning("Shortcut keys blocked!");
-      }
-    });
-
-    function triggerCheatWarning(reason) {
-      if (!isExamActive) return;
-      warnings++;
-      document.getElementById('warnCounterBadge').innerText = `Warn: ${warnings}/${MAX_WARNINGS}`;
-      
-      if (warnings >= MAX_WARNINGS) {
-        alert("Maximum warnings limit exceeded! Auto-submitting exam...");
-        submitExam();
-        return;
-      }
-
-      document.getElementById('warningMsgText').innerText = reason;
-      document.getElementById('warningCountText').innerText = `Warning ${warnings} of ${MAX_WARNINGS}`;
-      document.getElementById('cheatWarningOverlay').classList.remove('hidden-screen');
-    }
-
-    window.dismissWarning = function() {
-      document.getElementById('cheatWarningOverlay').classList.add('hidden-screen');
-      requestFullScreen();
-    }
-
-    function requestFullScreen() {
-      const docEl = document.documentElement;
-      if (docEl.requestFullscreen) docEl.requestFullscreen().catch(()=>{});
-    }
-
-    window.startProctoredExam = async function() {
+    window.startQuizSession = async function() {
       studentName = document.getElementById('studentNameInput').value.trim();
-      const code = document.getElementById('testCodeInput').value.trim().toUpperCase();
+      testCode = document.getElementById('testCodeInput').value.trim().toUpperCase();
 
-      if (!studentName || !code) return;
+      if (!studentName || !testCode) return;
 
       const startBtn = document.getElementById('startBtn');
       startBtn.disabled = true;
-      startBtn.innerText = "Authenticating...";
+      startBtn.innerText = "Connecting...";
 
       try {
         const testsRef = ref(db, 'tests');
-        const q = query(testsRef, orderByChild('code'), equalTo(code));
+        const q = query(testsRef, orderByChild('code'), equalTo(testCode));
         const snapshot = await get(q);
 
         if (!snapshot.exists()) {
           alert("Invalid Test Code!");
           startBtn.disabled = false;
-          startBtn.innerText = "Enter Online Exam Hall";
+          startBtn.innerText = "Join Room & Start Quiz";
           return;
         }
 
@@ -488,28 +338,21 @@
 
         document.getElementById('examStudentSub').innerText = studentName;
         document.getElementById('examHeaderTitle').innerText = examData.title;
-        document.getElementById('markingSchemeVal').innerText = `+${examData.positiveMarks || 4} / -${examData.negativeMarks || 1}`;
         
         document.getElementById('screenEntry').classList.add('hidden-screen');
         document.getElementById('screenHall').classList.remove('hidden-screen');
         document.getElementById('examMetaGroup').classList.remove('hidden-screen');
 
         remainingSeconds = (examData.timeLimit || 15) * 60;
-        isExamActive = true;
-        
-        examData.questions.forEach((_, idx) => { qStatus[idx] = 'unvisited'; });
-        qStatus[0] = 'not-ans';
-
-        requestFullScreen();
         startTimer();
         renderQ();
-        buildPaletteGrid();
+        listenToChat();
 
       } catch (e) {
         alert("Error: " + e.message);
       } finally {
         startBtn.disabled = false;
-        startBtn.innerText = "Enter Online Exam Hall";
+        startBtn.innerText = "Join Room & Start Quiz";
       }
     }
 
@@ -523,7 +366,7 @@
         if (remainingSeconds <= 0) {
           clearInterval(timerInterval);
           alert("Time Expired!");
-          submitExam();
+          submitQuiz();
         }
       }, 1000);
     }
@@ -551,7 +394,6 @@
 
       html += `</div>`;
       document.getElementById('questionBox').innerHTML = html;
-      buildPaletteGrid();
     }
 
     window.selectOpt = function(idx) {
@@ -560,78 +402,60 @@
     }
 
     window.saveAndNext = function() {
-      if (userAnswers[currentIndex] !== undefined) {
-        qStatus[currentIndex] = 'ans';
+      if (currentIndex < examData.questions.length - 1) {
+        currentIndex++;
+        renderQ();
       } else {
-        qStatus[currentIndex] = 'not-ans';
+        if (confirm("Submit your practice quiz?")) submitQuiz();
       }
-      advanceQuestion();
-    }
-
-    window.markForReview = function() {
-      qStatus[currentIndex] = 'review';
-      advanceQuestion();
     }
 
     window.clearResponse = function() {
       delete userAnswers[currentIndex];
-      qStatus[currentIndex] = 'not-ans';
       renderQ();
     }
 
-    function advanceQuestion() {
-      if (currentIndex < examData.questions.length - 1) {
-        currentIndex++;
-        if (qStatus[currentIndex] === 'unvisited') {
-          qStatus[currentIndex] = 'not-ans';
-        }
-        renderQ();
-      } else {
-        togglePalette();
+    window.toggleChat = function() {
+      document.getElementById('chatDrawer').classList.toggle('open');
+    }
+
+    window.sendChatMessage = async function() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      try {
+        const chatRef = ref(db, `chats/${testCode}`);
+        await push(chatRef, {
+          sender: studentName,
+          message: text,
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        input.value = '';
+      } catch (e) {
+        console.error(e);
       }
     }
 
-    window.togglePalette = function() {
-      const drawer = document.getElementById('paletteDrawer');
-      drawer.classList.toggle('open');
-    }
+    function listenToChat() {
+      const chatRef = ref(db, `chats/${testCode}`);
+      onChildAdded(chatRef, (snapshot) => {
+        const data = snapshot.val();
+        const chatBox = document.getElementById('chatMessages');
+        const isMine = data.sender === studentName;
 
-    function buildPaletteGrid() {
-      const grid = document.getElementById('paletteGrid');
-      let html = '';
-      
-      examData.questions.forEach((_, idx) => {
-        const status = qStatus[idx] || 'unvisited';
-        const isActive = idx === currentIndex;
-        
-        let statusClass = '';
-        if (status === 'ans') statusClass = 'ans';
-        else if (status === 'not-ans') statusClass = 'not-ans';
-        else if (status === 'review') statusClass = 'review';
-
-        html += `<button onclick="jumpToQ(${idx})" class="q-btn ${statusClass} ${isActive ? 'active' : ''}">${idx + 1}</button>`;
+        chatBox.innerHTML += `
+          <div class="chat-bubble ${isMine ? 'mine' : ''}">
+            <strong style="font-size:10px; color:${isMine ? '#1d4ed8' : '#334155'}; display:block;">${data.sender}</strong>
+            <span>${data.message}</span>
+            <span style="font-size:8px; color:#94a3b8; display:block; text-align:right;">${data.time}</span>
+          </div>
+        `;
+        chatBox.scrollTop = chatBox.scrollHeight;
       });
-
-      grid.innerHTML = html;
     }
 
-    window.jumpToQ = function(idx) {
-      currentIndex = idx;
-      if (qStatus[currentIndex] === 'unvisited') {
-        qStatus[currentIndex] = 'not-ans';
-      }
-      togglePalette();
-      renderQ();
-    }
-
-    window.confirmExamSubmit = function() {
-      if (confirm("Final submit examination?")) {
-        submitExam();
-      }
-    }
-
-    async function submitExam() {
-      isExamActive = false;
+    async function submitQuiz() {
       if (timerInterval) clearInterval(timerInterval);
 
       let correct = 0, wrong = 0, unanswered = 0;
@@ -648,15 +472,12 @@
 
       try {
         const resultsRef = ref(db, 'results');
-        const newResultRef = push(resultsRef);
-        await set(newResultRef, {
+        await push(resultsRef, {
           testCode: examData.code,
           studentName: studentName,
           score: score,
           correct: correct,
           wrong: wrong,
-          unanswered: unanswered,
-          warningsCount: warnings,
           submittedAt: new Date().toISOString()
         });
       } catch (e) {
@@ -665,23 +486,18 @@
 
       document.getElementById('screenHall').classList.add('hidden-screen');
       document.getElementById('examMetaGroup').classList.add('hidden-screen');
-      document.getElementById('paletteDrawer').classList.remove('open');
+      document.getElementById('chatDrawer').classList.remove('open');
       document.getElementById('screenResult').classList.remove('hidden-screen');
       document.getElementById('finalScoreVal').innerText = score;
 
       document.getElementById('resultBreakdown').innerHTML = `
         <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
-          <span>Correct (+${pos}):</span> <strong>${correct}</strong>
+          <span>Correct Answers:</span> <strong>${correct}</strong>
         </div>
         <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
-          <span>Incorrect (-${neg}):</span> <strong>${wrong}</strong>
-        </div>
-        <div style="display:flex; justify-content:space-between;">
-          <span>Unanswered:</span> <strong>${unanswered}</strong>
+          <span>Wrong Answers:</span> <strong>${wrong}</strong>
         </div>
       `;
-
-      if (document.exitFullscreen) document.exitFullscreen().catch(()=>{});
     }
 
     window.addEventListener('DOMContentLoaded', () => {
