@@ -26,7 +26,6 @@
       overflow: hidden;
     }
 
-    /* Admin App Frame - Fixed Layout */
     .admin-app {
       width: 100%;
       max-width: 460px;
@@ -40,7 +39,6 @@
       box-shadow: 0 20px 40px rgba(0,0,0,0.4);
     }
 
-    /* Top App Bar */
     .app-bar {
       background: #1e293b;
       color: #ffffff;
@@ -53,7 +51,6 @@
       flex-shrink: 0;
     }
 
-    /* Scrollable Content Area in Between */
     .app-content {
       flex: 1;
       overflow-y: auto;
@@ -70,7 +67,6 @@
       margin-bottom: 12px;
     }
 
-    /* Form Fields */
     .input-field {
       width: 100%;
       padding: 9px 12px;
@@ -96,7 +92,6 @@
       outline: none;
     }
 
-    /* Fixed Bottom Action Dock (Never Scrolls Away) */
     .action-dock {
       background: #ffffff;
       border-top: 1px solid #cbd5e1;
@@ -132,7 +127,6 @@
     }
     .nav-tab.active { color: #38bdf8; background: #0f172a; }
 
-    /* Button System */
     .btn {
       padding: 10px 14px;
       font-weight: 600;
@@ -161,7 +155,6 @@
 
   <div class="admin-app">
 
-    <!-- TOP APP BAR -->
     <header class="app-bar">
       <div style="display: flex; align-items: center; gap: 8px;">
         <svg class="svg-icon-lg" fill="#38bdf8" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
@@ -175,7 +168,6 @@
       </div>
     </header>
 
-    <!-- SCROLLABLE CONTENT -->
     <main class="app-content" id="mainContainer">
 
       <!-- SCREEN 1: CREATE TEST -->
@@ -214,7 +206,6 @@
           <span id="questionCountBadge" style="font-size: 10px; background: #e0f2fe; color: #0369a1; font-weight: 700; padding: 2px 6px; border-radius: 4px;">1 Question</span>
         </div>
 
-        <!-- Question Container -->
         <div id="questionsContainer"></div>
 
         <button onclick="addQuestionCard()" class="btn btn-secondary" style="margin-top: 4px; margin-bottom: 12px;">
@@ -245,18 +236,22 @@
         <button onclick="resetAdminForm()" class="btn btn-primary">Create Another Test</button>
       </div>
 
-      <!-- SCREEN 3: LIVE LEADERBOARD / RESULTS -->
+      <!-- SCREEN 3: LIVE LEADERBOARD / RESULTS & TESTS MANAGEMENT -->
       <div id="screenResults" class="hidden-screen">
         <div class="card" style="margin-bottom: 8px;">
-          <h2 style="font-size: 13px; font-weight: 700; margin-bottom: 4px;">Live Student Submissions</h2>
-          <p style="font-size: 10px; color: #64748b;">Real-time scores from connected students.</p>
+          <h2 style="font-size: 13px; font-weight: 700; margin-bottom: 4px;">Manage Tests & Submissions</h2>
+          <p style="font-size: 10px; color: #64748b;">Purane tests aur student results yahan se delete karein.</p>
         </div>
+
+        <div style="margin-bottom: 6px; font-size: 11px; font-weight: bold; color: #334155;">Published Tests List</div>
+        <div id="testsManagementList" style="margin-bottom: 14px;"></div>
+
+        <div style="margin-bottom: 6px; font-size: 11px; font-weight: bold; color: #334155;">Student Submissions Leaderboard</div>
         <div id="leaderboardList"></div>
       </div>
 
     </main>
 
-    <!-- FIXED BOTTOM ACTION DOCK (HAMESHA FIXED RAHEGA, NO SCROLL) -->
     <div class="action-dock" id="actionDockContainer">
       <button onclick="publishTestToRealtimeDB()" class="btn btn-success" id="publishBtn">
         <svg class="svg-icon" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
@@ -264,7 +259,6 @@
       </button>
     </div>
 
-    <!-- BOTTOM NAVIGATION TABS -->
     <nav class="bottom-nav">
       <button onclick="switchTab('create')" class="nav-tab active" id="navCreateBtn">
         <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
@@ -272,7 +266,7 @@
       </button>
       <button onclick="switchTab('results')" class="nav-tab" id="navResultsBtn">
         <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
-        Live Results
+        Manage / Results
       </button>
     </nav>
 
@@ -281,7 +275,7 @@
   <!-- FIREBASE REALTIME DATABASE SDK v10 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, push, set, get, query, orderByChild } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, push, set, get, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBPxAQLct9GHiEa7v5fkdYDwxUyZMyD3X0",
@@ -451,43 +445,103 @@
         r.classList.remove('hidden-screen');
         dock.classList.add('hidden-screen');
         nr.classList.add('active');
-        document.getElementById('headerSubtitle').innerText = "Live Student Submissions";
-        fetchLeaderboard();
+        document.getElementById('headerSubtitle').innerText = "Manage Tests & Submissions";
+        fetchAdminData();
+      }
+    }
+
+    async function fetchAdminData() {
+      fetchTestsList();
+      fetchLeaderboard();
+    }
+
+    async function fetchTestsList() {
+      const listEl = document.getElementById('testsManagementList');
+      listEl.innerHTML = '<div class="card" style="text-align:center; font-size:11px; color:#64748b;">Loading tests...</div>';
+
+      try {
+        const testsRef = ref(db, 'tests');
+        const snapshot = await get(testsRef);
+
+        if (!snapshot.exists()) {
+          listEl.innerHTML = '<div class="card" style="text-align:center; font-size:11px; color:#64748b;">No active tests found.</div>';
+          return;
+        }
+
+        let html = '';
+        snapshot.forEach((childSnap) => {
+          const testKey = childSnap.key;
+          const test = childSnap.val();
+          html += `
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; margin-bottom:6px;">
+              <div>
+                <h4 style="font-size:12px; font-weight:700; color:#1e293b;">${test.title}</h4>
+                <p style="font-size:10px; color:#64748b;">Code: <strong>${test.code}</strong> | Qs: ${test.questions ? test.questions.length : 0}</p>
+              </div>
+              <button onclick="deleteTestItem('${testKey}')" class="btn btn-danger">Delete</button>
+            </div>
+          `;
+        });
+        listEl.innerHTML = html;
+      } catch (e) {
+        listEl.innerHTML = `<div class="card" style="text-align:center; font-size:11px; color:#dc2626;">Error: ${e.message}</div>`;
+      }
+    }
+
+    window.deleteTestItem = async function(testKey) {
+      if (confirm("Kya aap is test ko delete karna chahte hain?")) {
+        try {
+          await remove(ref(db, `tests/${testKey}`));
+          alert("Test successfully deleted!");
+          fetchTestsList();
+        } catch (e) {
+          alert("Delete failed: " + e.message);
+        }
       }
     }
 
     async function fetchLeaderboard() {
       const listEl = document.getElementById('leaderboardList');
-      listEl.innerHTML = '<div class="card" style="text-align:center; font-size:11px; color:#64748b;">Loading results from Realtime DB...</div>';
+      listEl.innerHTML = '<div class="card" style="text-align:center; font-size:11px; color:#64748b;">Loading submissions...</div>';
 
       try {
         const resultsRef = ref(db, 'results');
         const snapshot = await get(resultsRef);
 
         if (!snapshot.exists()) {
-          listEl.innerHTML = '<div class="card" style="text-align:center; font-size:11px; color:#64748b;">No student submissions found yet.</div>';
+          listEl.innerHTML = '<div class="card" style="text-align:center; font-size:11px; color:#64748b;">No student submissions found.</div>';
           return;
         }
 
         let html = '';
         snapshot.forEach((childSnap) => {
+          const resKey = childSnap.key;
           const res = childSnap.val();
           html += `
-            <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; margin-bottom:8px;">
+            <div class="card" style="display:flex; justify-content:space-between; align-items:center; padding:10px 12px; margin-bottom:6px;">
               <div>
                 <h4 style="font-size:12px; font-weight:700; color:#1e293b;">${res.studentName}</h4>
-                <p style="font-size:10px; color:#64748b;">Code: <strong>${res.testCode}</strong> | Warns: ${res.warningsCount || 0}</p>
+                <p style="font-size:10px; color:#64748b;">Code: <strong>${res.testCode}</strong> | Score: <strong>${res.score}</strong></p>
               </div>
-              <div style="text-align:right;">
-                <span style="font-size:14px; font-weight:bold; font-family:monospace; color:#16a34a;">${res.score} Marks</span>
-                <p style="font-size:9px; color:#64748b;">C:${res.correct} | W:${res.wrong}</p>
-              </div>
+              <button onclick="deleteResultItem('${resKey}')" class="btn btn-danger">Delete</button>
             </div>
           `;
         });
         listEl.innerHTML = html;
       } catch (e) {
-        listEl.innerHTML = `<div class="card" style="text-align:center; font-size:11px; color:#dc2626;">Error loading results: ${e.message}</div>`;
+        listEl.innerHTML = `<div class="card" style="text-align:center; font-size:11px; color:#dc2626;">Error: ${e.message}</div>`;
+      }
+    }
+
+    window.deleteResultItem = async function(resKey) {
+      if (confirm("Kya aap is student result ko delete karna chahte hain?")) {
+        try {
+          await remove(ref(db, `results/${resKey}`));
+          alert("Result successfully deleted!");
+          fetchLeaderboard();
+        } catch (e) {
+          alert("Delete failed: " + e.message);
+        }
       }
     }
 
