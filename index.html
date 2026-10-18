@@ -73,12 +73,12 @@
     }
     .nav-tab.active { color: #38bdf8; background: #1e293b; border-bottom: 2px solid #38bdf8; }
 
-    /* Main Content */
+    /* Main Content Area with Bottom Padding for Fixed Button */
     .app-content {
       flex: 1;
       overflow-y: auto;
       padding: 12px;
-      padding-bottom: 70px; /* Space for fixed publish button */
+      padding-bottom: 75px; 
     }
 
     .card {
@@ -119,7 +119,7 @@
       outline: none;
     }
 
-    /* Fixed Bottom Action Dock (Hamesha visible rahega) */
+    /* Fixed Bottom Action Dock */
     .action-dock {
       position: absolute;
       bottom: 0;
@@ -278,7 +278,7 @@
 
     </main>
 
-    <!-- FIXED ACTION BUTTON AT BOTTOM (Hamesha dikhega) -->
+    <!-- FIXED ACTION BUTTON AT BOTTOM -->
     <div class="action-dock" id="actionDockContainer">
       <div style="max-width: 600px; margin: 0 auto; width: 100%;">
         <button onclick="publishTestToRealtimeDB()" class="btn btn-success" id="publishBtn">
@@ -546,8 +546,6 @@
           `;
         });
         listEl.innerHTML = html;
-      }, (e) => {
-        listEl.innerHTML = `<div class="card" style="text-align:center; font-size:10px; color:#dc2626;">Error: ${e.message}</div>`;
       } catch (e) {
         listEl.innerHTML = `<div class="card" style="text-align:center; font-size:10px; color:#dc2626;">Error: ${e.message}</div>`;
       }
