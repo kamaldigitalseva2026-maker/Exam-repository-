@@ -32,7 +32,6 @@
       background: #f8fafc;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
       position: relative;
       overflow: hidden;
     }
@@ -74,11 +73,12 @@
     }
     .nav-tab.active { color: #38bdf8; background: #1e293b; border-bottom: 2px solid #38bdf8; }
 
+    /* Main Content */
     .app-content {
       flex: 1;
       overflow-y: auto;
       padding: 12px;
-      position: relative;
+      padding-bottom: 70px; /* Space for fixed publish button */
     }
 
     .card {
@@ -119,15 +119,20 @@
       outline: none;
     }
 
+    /* Fixed Bottom Action Dock (Hamesha visible rahega) */
     .action-dock {
-      background: #ffffff;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(4px);
       border-top: 1px solid #cbd5e1;
       padding: 8px 12px;
       display: flex;
-      flex-direction: column;
-      gap: 6px;
-      flex-shrink: 0;
-      z-index: 20;
+      justify-content: center;
+      z-index: 30;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
     }
 
     .btn {
@@ -226,7 +231,7 @@
         <div id="questionsContainer"></div>
 
         <div style="max-width: 600px; margin: 0 auto;">
-          <button onclick="addQuestionCard()" class="btn btn-secondary" style="margin-top: 2px; margin-bottom: 10px;">
+          <button onclick="addQuestionCard()" class="btn btn-secondary" style="margin-top: 2px; margin-bottom: 16px;">
             <svg class="svg-icon" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             Add Another Question
           </button>
@@ -273,7 +278,7 @@
 
     </main>
 
-    <!-- FIXED ACTION BUTTON AT BOTTOM -->
+    <!-- FIXED ACTION BUTTON AT BOTTOM (Hamesha dikhega) -->
     <div class="action-dock" id="actionDockContainer">
       <div style="max-width: 600px; margin: 0 auto; width: 100%;">
         <button onclick="publishTestToRealtimeDB()" class="btn btn-success" id="publishBtn">
@@ -541,6 +546,8 @@
           `;
         });
         listEl.innerHTML = html;
+      }, (e) => {
+        listEl.innerHTML = `<div class="card" style="text-align:center; font-size:10px; color:#dc2626;">Error: ${e.message}</div>`;
       } catch (e) {
         listEl.innerHTML = `<div class="card" style="text-align:center; font-size:10px; color:#dc2626;">Error: ${e.message}</div>`;
       }
